@@ -1,40 +1,94 @@
 from config import configs_1 as configs
 
 
-def itsNumber(data):
+def itsNumber(character):
     try:
-        int(data)
+        int(character)
         return True
     except:
         return False
 
-def separateData(configs):
+def processData(config):
 
-    data = configs.split("\n")
-    # Seeds
-    data[0] = data[0][data[0].index(":") + 2:]
+    config = [data for data in config.split("\n") if data != '']
 
-    # Other data
-    # seed-to-soil map
-    # soil-to-fertilizer map:
-    # fertilizer-to-water map:
-    # water-to-light map:
-    # light-to-temperature map:
-    # temperature-to-humidity map:
-    # humidity-to-location map:
+    firstConf = config[0] 
+    pIndice = firstConf.index(":") + 2
+    config[0] = firstConf[pIndice:]
 
-    skip = False
-    newArrayData = []
-    for dataA in data:
-        if(skip):
-            if(dataA != ""):
-                print(itsNumber(dataA[0]))
-        else: 
-            skip = True
+    outpuConfig = []
+    temporalConfig = []
 
-    print(data)
+    for configProcess in config:
+        if(itsNumber(configProcess[0])):
+            temporalConfig.append(configProcess)
+        else:
+            outpuConfig.append(temporalConfig)
+            temporalConfig = []
 
+    outpuConfig.append(temporalConfig)
+    return outpuConfig
 
-separateData(configs)
-
+def searchMap(mapa,number):
     
+    answer = -1
+    for data in mapa:
+        data = [int(value) for value in data.split(" ")]
+
+        i = data[1]
+        s = data[2]
+        d = data[0]
+        l = (s - 1) + i
+                 
+        if(i <= number and number <= l):
+            si = abs(number - i)
+            sa = abs(si + d)
+            answer = sa       
+    
+    if answer == -1:
+        answer = number
+    
+    return answer
+
+config = processData(configs)
+locations = []
+answer = 0
+for seed in config[0][0].split(" "):
+    
+    seed = int(seed)
+    # Seed 
+    # print(seed)
+    
+    # Soil    
+    answer = searchMap(config[1],seed)
+    # print(f"Soil: {answer}")
+    
+    # # Fertilizer
+    answer = searchMap(config[2],answer)
+    # print(f"Fertilizer: {answer}")
+    
+    # # Water
+    answer = searchMap(config[3],answer)
+    # print(f"Water: {answer}")
+    
+    # # Light
+    answer = searchMap(config[4],answer)
+    # print(f"Light: {answer}")
+    
+    # # Temperature
+    answer = searchMap(config[5],answer)
+    # print(f"Temperature: {answer}")
+    
+    # # Humidity
+    answer = searchMap(config[6],answer)
+    # print(f"Humidity: {answer}")
+    
+    # # Location
+    answer = searchMap(config[7],answer)
+    # print(f"Location: {answer}")
+    
+    locations.append(answer)
+    
+    # print("\n")
+
+print(min(locations)) 
